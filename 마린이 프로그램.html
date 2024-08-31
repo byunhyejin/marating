@@ -1,10 +1,12 @@
-<html><head><base href="https://marini-marathon.com/">
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>마린이 - 2024 마라톤 대회 정보 및 기록 관리</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.2/main.min.css" rel="stylesheet">
-  <style>
+import streamlit as st
+from streamlit.components.v1 import html
+
+# Streamlit 페이지 설정
+st.set_page_config(page_title="마린이 - 2024 마라톤 대회 정보 및 기록 관리", layout="wide")
+
+# 스타일 정의
+style = """
+    <style>
     body {
       font-family: 'Noto Sans KR', sans-serif;
       line-height: 1.6;
@@ -28,11 +30,6 @@
       margin: 0;
       font-size: 2.5em;
     }
-    #map {
-      height: 400px;
-      width: 100%;
-      margin-bottom: 20px;
-    }
     .record-form {
       background-color: #fff;
       padding: 20px;
@@ -40,280 +37,56 @@
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
       margin-bottom: 20px;
     }
-  </style>
-  </head>
-  <body>
-    <div class="container">
-      <header>
-        <h1>마린이</h1>
-        <p>2024 마라톤 대회 정보 및 기록 관리</p>
-      </header>
-  
-      <div class="row">
-        <div class="col-md-6">
-          <h2>2024년 마라톤 대회 일정</h2>
-          <table class="table table-striped">
-            <thead>
-              <tr>
-                <th>날짜</th>
-                <th>대회명</th>
-                <th>장소</th>
-                <th>거리</th>
-              </tr>
-            </thead>
-            <tbody id="marathonTable">
-              <!-- JavaScript로 채워질 예정 -->
-            </tbody>
-          </table>
-        </div>
-        <div class="col-md-6">
-          <h2>다음달 마라톤 일정</h2>
-          <div id="calendar"></div>
-        </div>
-      </div>
-  
-      <div class="row mt-4">
-        <div class="col-md-6">
-          <h2>참가 희망자 명단</h2>
-          <table class="table table-striped">
-            <thead>
-              <tr>
-                <th>이름</th>
-                <th>대회명</th>
-                <th>날짜</th>
-              </tr>
-            </thead>
-            <tbody id="participantTable">
-              <!-- JavaScript로 채워질 예정 -->
-            </tbody>
-          </table>
-          <form id="participantForm">
-            <div class="mb-3">
-              <input type="text" class="form-control" id="participantName" placeholder="이름" required>
-            </div>
-            <div class="mb-3">
-              <select class="form-control" id="marathonSelect" required>
-                <option value="">대회 선택</option>
-                <!-- JavaScript로 채워질 예정 -->
-              </select>
-            </div>
-            <button type="submit" class="btn btn-primary">참가 신청</button>
-          </form>
-        </div>
-        <div class="col-md-6">
-          <h2>마라톤 코스</h2>
-          <div id="map"></div>
-        </div>
-      </div>
-  
-      <div class="row mt-4">
-        <div class="col-md-12">
-          <h2>개인 마라톤 기록</h2>
-          <form id="recordForm" class="record-form">
-            <div class="row">
-              <div class="col-md-2">
-                <input type="number" class="form-control" id="record5k" placeholder="5km 기록 (분)">
-              </div>
-              <div class="col-md-2">
-                <input type="number" class="form-control" id="record10k" placeholder="10km 기록 (분)">
-              </div>
-              <div class="col-md-2">
-                <input type="number" class="form-control" id="record15k" placeholder="15km 기록 (분)">
-              </div>
-              <div class="col-md-2">
-                <input type="number" class="form-control" id="record21k" placeholder="21km 기록 (분)">
-              </div>
-              <div class="col-md-2">
-                <input type="number" class="form-control" id="recordFull" placeholder="풀코스 기록 (분)">
-              </div>
-              <div class="col-md-2">
-                <button type="submit" class="btn btn-primary">기록 저장</button>
-              </div>
-            </div>
-          </form>
-          <table class="table table-striped mt-3">
-            <thead>
-              <tr>
-                <th>5km</th>
-                <th>10km</th>
-                <th>15km</th>
-                <th>21km</th>
-                <th>풀코스</th>
-              </tr>
-            </thead>
-            <tbody id="recordTable">
-              <!-- JavaScript로 채워질 예정 -->
-            </tbody>
-          </table>
-        </div>
-      </div>
-  
-      <div class="row mt-4">
-        <div class="col-md-12">
-          <h2>날씨에 맞는 추천 노래</h2>
-          <div id="weatherMusic"></div>
-        </div>
-      </div>
+    </style>
+"""
+
+# HTML 구조 및 자바스크립트 로직
+html_code = f"""
+{style}
+<div class="container">
+  <header>
+    <h1>마린이</h1>
+    <p>2024 마라톤 대회 정보 및 기록 관리</p>
+  </header>
+
+  <div class="row">
+    <div class="col-md-6">
+      <h2>2024년 마라톤 대회 일정</h2>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>날짜</th>
+            <th>대회명</th>
+            <th>장소</th>
+            <th>거리</th>
+          </tr>
+        </thead>
+        <tbody id="marathonTable">
+          <!-- JavaScript로 채워질 예정 -->
+        </tbody>
+      </table>
     </div>
-  
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.2/main.min.js"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap" async defer></script>
-    <script>
-      // 마라톤 대회 데이터
-      const marathons = [
-        { date: "2024-03-17", name: "서울국제마라톤", location: "서울", distance: "42.195km" },
-        { date: "2024-04-14", name: "벚꽃마라톤", location: "경주", distance: "42.195km" },
-        { date: "2024-05-19", name: "부산국제마라톤", location: "부산", distance: "42.195km" },
-        { date: "2024-09-08", name: "춘천마라톤", location: "춘천", distance: "42.195km" },
-        { date: "2024-10-20", name: "제주마라톤", location: "제주", distance: "42.195km" },
-        { date: "2024-11-03", name: "광주마라톤", location: "광주", distance: "42.195km" }
-      ];
-  
-      // 마라톤 테이블 채우기
-      const marathonTable = document.getElementById("marathonTable");
-      marathons.forEach(marathon => {
-        const row = marathonTable.insertRow();
-        row.insertCell(0).textContent = marathon.date;
-        row.insertCell(1).textContent = marathon.name;
-        row.insertCell(2).textContent = marathon.location;
-        row.insertCell(3).textContent = marathon.distance;
-      });
-  
-      // 달력 초기화
-      document.addEventListener('DOMContentLoaded', function() {
-        var calendarEl = document.getElementById('calendar');
-        var calendar = new FullCalendar.Calendar(calendarEl, {
-          initialView: 'dayGridMonth',
-          events: marathons.map(marathon => ({
-            title: marathon.name,
-            start: marathon.date
-          })),
-          selectable: true,
-          select: function(info) {
-            // 선택한 날짜에 대회가 있는지 확인
-            const selectedMarathon = marathons.find(m => m.date === info.startStr);
-            
-            if (selectedMarathon) {
-              // 참가 신청 의사 확인
-              const userConfirmed = confirm(
-                `${selectedMarathon.name} 대회 (${selectedMarathon.date})에 참가 신청하시겠습니까?`
-              );
-              
-              if (userConfirmed) {
-                const participantName = prompt('이름을 입력하세요:');
-                
-                if (participantName) {
-                  // 참가자 명단에 추가
-                  const row = participantTable.insertRow();
-                  row.insertCell(0).textContent = participantName;
-                  row.insertCell(1).textContent = selectedMarathon.name;
-                  row.insertCell(2).textContent = selectedMarathon.date;
-                } else {
-                  alert('참가 신청이 취소되었습니다.');
-                }
-              }
-            } else {
-              alert('선택한 날짜에 대회가 없습니다.');
-            }
-          }
-        });
-        calendar.render();
-      });
-  
-      // 참가 신청 폼 처리
-      const participantForm = document.getElementById("participantForm");
-      const participantTable = document.getElementById("participantTable");
-      const marathonSelect = document.getElementById("marathonSelect");
-  
-      // 마라톤 선택 옵션 채우기
-      marathons.forEach(marathon => {
-        const option = document.createElement("option");
-        option.value = marathon.name;
-        option.textContent = `${marathon.name} (${marathon.date})`;
-        marathonSelect.appendChild(option);
-      });
-  
-      participantForm.addEventListener("submit", function(e) {
-        e.preventDefault();
-        const name = document.getElementById("participantName").value;
-        const selectedMarathon = marathonSelect.value;
-        const marathonDate = marathons.find(m => m.name === selectedMarathon).date;
-  
-        const row = participantTable.insertRow();
-        row.insertCell(0).textContent = name;
-        row.insertCell(1).textContent = selectedMarathon;
-        row.insertCell(2).textContent = marathonDate;
-  
-        participantForm.reset();
-      });
-  
-      // 지도 초기화
-      function initMap() {
-        const map = new google.maps.Map(document.getElementById("map"), {
-          center: { lat: 36.5, lng: 127.5 },
-          zoom: 7
-        });
-  
-        // 예시 코스 (서울)
-        const coursePath = [
-          {lat: 37.5665, lng: 126.9780},
-          {lat: 37.5707, lng: 126.9756},
-          {lat: 37.5741, lng: 126.9765},
-          {lat: 37.5730, lng: 126.9825},
-          {lat: 37.5665, lng: 126.9780}
-        ];
-  
-        const courseLine = new google.maps.Polyline({
-          path: coursePath,
-          geodesic: true,
-          strokeColor: "#FF0000",
-          strokeOpacity: 1.0,
-          strokeWeight: 2
-        });
-  
-        courseLine.setMap(map);
-      }
-  
-      // 개인 기록 폼 처리
-      const recordForm = document.getElementById("recordForm");
-      const recordTable = document.getElementById("recordTable");
-  
-      recordForm.addEventListener("submit", function(e) {
-        e.preventDefault();
-        const row = recordTable.insertRow(0);
-        row.insertCell(0).textContent = document.getElementById("record5k").value + "분";
-        row.insertCell(1).textContent = document.getElementById("record10k").value + "분";
-        row.insertCell(2).textContent = document.getElementById("record15k").value + "분";
-        row.insertCell(3).textContent = document.getElementById("record21k").value + "분";
-        row.insertCell(4).textContent = document.getElementById("recordFull").value + "분";
-        recordForm.reset();
-      });
-  
-      // 날씨에 따른 음악 추천
-      function getWeatherMusic() {
-        // 실제로는 날씨 API를 사용해야 합니다.
-        const weather = ["sunny", "rainy", "cloudy"][Math.floor(Math.random() * 3)];
-        const musicByWeather = {
-          sunny: { title: "Walking on Sunshine", artist: "Katrina and The Waves" },
-          rainy: { title: "Set Fire to the Rain", artist: "Adele" },
-          cloudy: { title: "The Sound of Silence", artist: "Simon & Garfunkel" }
-        };
-  
-        const music = musicByWeather[weather];
-        const weatherMusic = document.getElementById("weatherMusic");
-        weatherMusic.innerHTML = `
-          <p>현재 날씨: ${weather}</p>
-          <p>추천 노래: ${music.title} - ${music.artist}</p>
-          <audio controls>
-            <source src="music/${music.title.toLowerCase().replace(/ /g, '_')}.mp3" type="audio/mpeg">
-            Your browser does not support the audio element.
-          </audio>
-        `;
-      }
-  
-      getWeatherMusic();
-    </script>
-  </body>
-  </html>
-  
+    <div class="col-md-6">
+      <h2>다음달 마라톤 일정</h2>
+      <div id="calendar"></div>
+    </div>
+  </div>
+
+  <div class="row mt-4">
+    <div class="col-md-6">
+      <h2>참가 희망자 명단</h2>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>이름</th>
+            <th>대회명</th>
+            <th>날짜</th>
+          </tr>
+        </thead>
+        <tbody id="participantTable">
+          <!-- JavaScript로 채워질 예정 -->
+        </tbody>
+      </table>
+      <form id="participantForm">
+        <div class="mb-3">
+          <input type="text" class="form-control" id="
